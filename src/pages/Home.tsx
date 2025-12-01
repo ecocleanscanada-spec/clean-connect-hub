@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Check, Sparkles, Shield, Clock, Award } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import heroImage from "@/assets/hero-cleaning.jpg";
 
 const services = [
   {
@@ -86,8 +87,15 @@ export default function Home() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-hero text-primary-foreground py-20 md:py-32">
-        <div className="absolute inset-0 bg-pattern-dots opacity-10" style={{ backgroundSize: '24px 24px' }} />
+      <section className="relative text-primary-foreground py-20 md:py-32 min-h-[600px] flex items-center">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        {/* Blue Transparent Overlay */}
+        <div className="absolute inset-0 bg-primary/70" />
+        {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
