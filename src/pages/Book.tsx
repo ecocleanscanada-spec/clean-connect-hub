@@ -32,10 +32,12 @@ export default function Book() {
     time: "",
     notes: "",
   });
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
     toast({
       title: "Booking request received!",
       description: "We'll contact you shortly to confirm your appointment.",
@@ -226,9 +228,13 @@ export default function Book() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full bg-primary hover:bg-primary-hover text-primary-foreground"
+                    className={`w-full text-primary-foreground ${
+                      isSubmitted 
+                        ? "bg-primary/40 hover:bg-primary/40" 
+                        : "bg-primary hover:bg-primary-hover"
+                    }`}
                   >
-                    Submit Booking Request
+                    {isSubmitted ? "Request Sent!" : "Submit Booking Request"}
                   </Button>
                 </form>
               </CardContent>
