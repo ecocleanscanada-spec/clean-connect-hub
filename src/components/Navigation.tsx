@@ -32,9 +32,8 @@ export default function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-            <img src={ecocleans} alt="Ecocleans logo" className="h-8 w-8" />
-            <span>Ecocleans</span>
+          <Link to="/" className="flex items-center">
+            <img src={ecocleans} alt="Ecocleans Pristine Clean" className="h-12" />
           </Link>
 
           {/* Desktop Navigation */}
