@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, Sparkles } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import ecocleans from "@/assets/ecocleans-logo.png";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -32,8 +33,8 @@ export default function Navigation() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-            <Sparkles className="h-6 w-6" />
-            <span>CleanPro</span>
+            <img src={ecocleans} alt="Ecocleans logo" className="h-8 w-8" />
+            <span>Ecocleans</span>
           </Link>
 
           {/* Desktop Navigation */}

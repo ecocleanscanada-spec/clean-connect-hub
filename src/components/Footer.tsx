@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import ecocleans from "@/assets/ecocleans-logo.png";
 
 const services = [
   { name: "Maid Service", slug: "maid-service" },
@@ -18,8 +19,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-              <Sparkles className="h-6 w-6" />
-              <span>CleanPro</span>
+              <img src={ecocleans} alt="Ecocleans logo" className="h-8 w-8" />
+              <span>Ecocleans</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Professional cleaning services you can trust. Making spaces shine since 2024.
@@ -91,7 +92,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} CleanPro. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Ecocleans. All rights reserved.</p>
         </div>
       </div>
     </footer>
