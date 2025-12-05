@@ -87,7 +87,7 @@ export default function Home() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative text-primary-foreground py-20 md:py-32 min-h-[600px] flex items-center">
+      <section className="relative text-primary-foreground py-8 md:py-12 min-h-[600px] flex items-center">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
