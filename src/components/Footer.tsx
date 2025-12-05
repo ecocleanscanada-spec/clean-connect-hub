@@ -19,7 +19,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
-              <img src={ecocleans} alt="Ecocleans Pristine Clean" className="h-28" />
+              <img src={ecocleans} alt="Ecocleans Pristine Clean" style={{ width: '189px', height: '76px' }} className="object-contain" />
             </Link>
             <p className="text-sm text-muted-foreground">
               Professional cleaning services you can trust. Making spaces shine since 2024.
