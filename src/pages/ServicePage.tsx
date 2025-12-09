@@ -24,7 +24,20 @@ const serviceData: Record<string, any> = {
       "Bed making and linen changes",
       "Floor mopping and care",
     ],
-    pricing: "Starting from $120/visit",
+    blogs: [
+      {
+        title: "5 Tips for Maintaining a Clean Home Between Maid Visits",
+        excerpt: "Discover simple daily habits that keep your home fresh and tidy between professional cleanings.",
+        date: "December 5, 2024",
+        slug: "tips-maintaining-clean-home"
+      },
+      {
+        title: "Why Regular Maid Service Saves You Time and Money",
+        excerpt: "Learn how investing in professional maid service can actually reduce your overall household expenses.",
+        date: "November 28, 2024",
+        slug: "maid-service-saves-money"
+      }
+    ],
     faqs: [
       {
         question: "How long does a typical maid service visit take?",
@@ -52,7 +65,20 @@ const serviceData: Record<string, any> = {
       "Cabinet exterior wiping",
       "Detailed bathroom scrubbing",
     ],
-    pricing: "Starting from $200/session",
+    blogs: [
+      {
+        title: "Deep Cleaning Checklist: Room-by-Room Guide",
+        excerpt: "A comprehensive guide to deep cleaning every area of your home like a professional.",
+        date: "December 3, 2024",
+        slug: "deep-cleaning-checklist"
+      },
+      {
+        title: "Spring Cleaning vs Deep Cleaning: What's the Difference?",
+        excerpt: "Understanding the key differences between seasonal and deep cleaning services.",
+        date: "November 20, 2024",
+        slug: "spring-vs-deep-cleaning"
+      }
+    ],
     faqs: [
       {
         question: "What's the difference between deep cleaning and regular cleaning?",
@@ -80,7 +106,20 @@ const serviceData: Record<string, any> = {
       "Restroom deep cleaning",
       "Floor care and maintenance",
     ],
-    pricing: "Custom quotes based on space size",
+    blogs: [
+      {
+        title: "How a Clean Office Boosts Employee Productivity",
+        excerpt: "Studies show that clean workspaces can increase productivity by up to 15%.",
+        date: "December 1, 2024",
+        slug: "clean-office-productivity"
+      },
+      {
+        title: "Office Hygiene Best Practices Post-Pandemic",
+        excerpt: "Essential cleaning protocols to keep your workplace safe and healthy.",
+        date: "November 15, 2024",
+        slug: "office-hygiene-practices"
+      }
+    ],
     faqs: [
       {
         question: "Can you work around our business hours?",
@@ -108,7 +147,20 @@ const serviceData: Record<string, any> = {
       "Trash removal and recycling",
       "Safety compliance cleaning",
     ],
-    pricing: "Contact for custom quote",
+    blogs: [
+      {
+        title: "Industrial Cleaning Safety Standards You Should Know",
+        excerpt: "OSHA requirements and best practices for warehouse cleanliness and safety.",
+        date: "November 25, 2024",
+        slug: "industrial-cleaning-safety"
+      },
+      {
+        title: "Maximizing Warehouse Efficiency Through Cleanliness",
+        excerpt: "How organized, clean warehouses reduce accidents and improve workflow.",
+        date: "November 10, 2024",
+        slug: "warehouse-efficiency-cleanliness"
+      }
+    ],
     faqs: [
       {
         question: "Can you accommodate 24/7 operations?",
@@ -136,7 +188,20 @@ const serviceData: Record<string, any> = {
       "High-rise capabilities",
       "Streak-free guarantee",
     ],
-    pricing: "Starting from $150/visit",
+    blogs: [
+      {
+        title: "How Often Should You Clean Your Windows?",
+        excerpt: "A guide to window cleaning frequency based on your location and environment.",
+        date: "November 22, 2024",
+        slug: "window-cleaning-frequency"
+      },
+      {
+        title: "DIY vs Professional Window Cleaning: Which is Right for You?",
+        excerpt: "Weighing the pros and cons of cleaning windows yourself versus hiring professionals.",
+        date: "November 5, 2024",
+        slug: "diy-vs-professional-windows"
+      }
+    ],
     faqs: [
       {
         question: "How often should windows be professionally cleaned?",
@@ -164,7 +229,20 @@ const serviceData: Record<string, any> = {
       "Fast drying time",
       "Area rug cleaning",
     ],
-    pricing: "Starting from $35/room",
+    blogs: [
+      {
+        title: "The Science Behind Professional Carpet Cleaning",
+        excerpt: "Understanding hot water extraction and why it's the gold standard for carpet care.",
+        date: "November 18, 2024",
+        slug: "science-carpet-cleaning"
+      },
+      {
+        title: "Pet Owners Guide to Carpet Maintenance",
+        excerpt: "Tips and tricks for keeping your carpets fresh when you have furry friends.",
+        date: "October 30, 2024",
+        slug: "pet-owners-carpet-guide"
+      }
+    ],
     faqs: [
       {
         question: "How long until carpets are dry?",
@@ -192,7 +270,20 @@ const serviceData: Record<string, any> = {
       "Trash and recycling service",
       "Supply management",
     ],
-    pricing: "Monthly contracts available",
+    blogs: [
+      {
+        title: "Choosing the Right Janitorial Service for Your Business",
+        excerpt: "Key factors to consider when selecting a commercial cleaning partner.",
+        date: "November 12, 2024",
+        slug: "choosing-janitorial-service"
+      },
+      {
+        title: "Green Cleaning: Eco-Friendly Janitorial Practices",
+        excerpt: "How sustainable cleaning practices benefit your business and the environment.",
+        date: "October 25, 2024",
+        slug: "green-cleaning-practices"
+      }
+    ],
     faqs: [
       {
         question: "What's included in a janitorial contract?",
@@ -220,7 +311,20 @@ const serviceData: Record<string, any> = {
       "Fabric protection treatment",
       "Leather conditioning",
     ],
-    pricing: "Starting from $75/piece",
+    blogs: [
+      {
+        title: "How to Identify Your Upholstery Fabric Type",
+        excerpt: "Understanding fabric codes and what they mean for cleaning your furniture.",
+        date: "November 8, 2024",
+        slug: "identify-upholstery-fabric"
+      },
+      {
+        title: "Extending the Life of Your Furniture Through Proper Care",
+        excerpt: "Professional tips to keep your sofas and chairs looking new for years.",
+        date: "October 20, 2024",
+        slug: "extending-furniture-life"
+      }
+    ],
     faqs: [
       {
         question: "What types of fabric can you clean?",
@@ -248,7 +352,20 @@ const serviceData: Record<string, any> = {
       "Filter replacement",
       "Before/after photos",
     ],
-    pricing: "Starting from $350/system",
+    blogs: [
+      {
+        title: "Signs Your Air Ducts Need Professional Cleaning",
+        excerpt: "Warning signs that indicate it's time to schedule duct cleaning service.",
+        date: "November 1, 2024",
+        slug: "signs-ducts-need-cleaning"
+      },
+      {
+        title: "The Connection Between Air Quality and Health",
+        excerpt: "How clean air ducts contribute to a healthier home environment.",
+        date: "October 15, 2024",
+        slug: "air-quality-health-connection"
+      }
+    ],
     faqs: [
       {
         question: "How often should air ducts be cleaned?",
@@ -326,29 +443,34 @@ export default function ServicePage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Pricing</CardTitle>
-                <CardDescription>Transparent, competitive rates</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-primary mb-4">{service.pricing}</p>
-                <p className="text-muted-foreground mb-6">
-                  Final pricing depends on your specific needs, space size, and frequency of service. 
-                  Contact us for a detailed, no-obligation quote.
-                </p>
-                <Link to="/contact">
-                  <Button variant="outline">Get a Free Quote</Button>
-                </Link>
-              </CardContent>
-            </Card>
+      {/* Related Blog Posts */}
+      {service.blogs && service.blogs.length > 0 && (
+        <section className="py-16 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold mb-8">Related Articles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {service.blogs.map((blog: any, index: number) => (
+                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardDescription>{blog.date}</CardDescription>
+                      <CardTitle className="text-xl leading-tight">{blog.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground mb-4">{blog.excerpt}</p>
+                      <Link to={`/blog/${blog.slug}`}>
+                        <Button variant="link" className="p-0 h-auto text-primary">
+                          Read More →
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="py-16">
