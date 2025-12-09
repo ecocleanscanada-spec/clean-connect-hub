@@ -8,6 +8,10 @@ import ServicePage from "./pages/ServicePage";
 import Contact from "./pages/Contact";
 import Book from "./pages/Book";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
+import AdminBlogEditor from "./pages/AdminBlogEditor";
 import NotFound from "./pages/NotFound";
 import FloatingCallButton from "./components/FloatingCallButton";
 
@@ -25,6 +29,10 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/book" element={<Book />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

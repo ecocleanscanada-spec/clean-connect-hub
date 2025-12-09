@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Star } from "lucide-react";
+import { Check } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -10,6 +10,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useBlogs } from "@/hooks/useBlogs";
+import { format } from "date-fns";
 
 const serviceData: Record<string, any> = {
   "maid-service": {
@@ -386,6 +388,18 @@ const serviceData: Record<string, any> = {
 export default function ServicePage() {
   const { slug } = useParams();
   const service = slug ? serviceData[slug] : null;
+  const { data: dbBlogs, isLoading: blogsLoading } = useBlogs(slug);
+  
+  // Combine static blogs with database blogs
+  const allBlogs = [
+    ...(dbBlogs || []).map(blog => ({
+      title: blog.title,
+      excerpt: blog.excerpt || "",
+      date: format(new Date(blog.created_at), "MMMM d, yyyy"),
+      slug: blog.slug
+    })),
+    ...(service?.blogs || [])
+  ];
 
   if (!service) {
     return (
@@ -444,13 +458,13 @@ export default function ServicePage() {
       </section>
 
       {/* Related Blog Posts */}
-      {service.blogs && service.blogs.length > 0 && (
+      {allBlogs.length > 0 && (
         <section className="py-16 bg-muted/50">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold mb-8">Related Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {service.blogs.map((blog: any, index: number) => (
+                {allBlogs.map((blog: any, index: number) => (
                   <Card key={index} className="hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <CardDescription>{blog.date}</CardDescription>
