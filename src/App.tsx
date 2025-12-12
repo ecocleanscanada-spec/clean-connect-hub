@@ -12,6 +12,7 @@ import BlogPost from "./pages/BlogPost";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
+import GMBGuide from "./pages/GMBGuide";
 import NotFound from "./pages/NotFound";
 import FloatingCallButton from "./components/FloatingCallButton";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
+          <Route path="/gmb-guide" element={<GMBGuide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
