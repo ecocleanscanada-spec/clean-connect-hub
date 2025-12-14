@@ -167,6 +167,12 @@ export const VoiceAgentDialog: React.FC<VoiceAgentDialogProps> = ({ open, onOpen
                   </div>
                 </div>
                 <div className="bg-background border border-border rounded p-2">
+                  <label className="block text-[10px] text-muted-foreground uppercase">Email</label>
+                  <div className={`text-sm ${bookingDetails.email ? 'text-foreground font-medium' : 'text-muted-foreground/50 italic'}`}>
+                    {bookingDetails.email || 'Pending...'}
+                  </div>
+                </div>
+                <div className="bg-background border border-border rounded p-2">
                   <label className="block text-[10px] text-muted-foreground uppercase">Address</label>
                   <div className={`text-sm ${bookingDetails.address ? 'text-foreground font-medium' : 'text-muted-foreground/50 italic'}`}>
                     {bookingDetails.address || 'Pending...'}
