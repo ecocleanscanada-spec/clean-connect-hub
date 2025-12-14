@@ -15,6 +15,7 @@ export interface ChatMessage {
 export interface BookingDetails {
   customerName?: string;
   phoneNumber?: string;
+  email?: string;
   address?: string;
   cleaningSize?: string;
   bedrooms?: number;

@@ -9,6 +9,7 @@ export const BOOKING_TOOL: FunctionDeclaration = {
     properties: {
       customerName: { type: Type.STRING, description: "Customer's full name" },
       phoneNumber: { type: Type.STRING, description: "Customer's phone number" },
+      email: { type: Type.STRING, description: "Customer's email address" },
       address: { type: Type.STRING, description: "Service address" },
       cleaningSize: { type: Type.STRING, description: "Approximate size of cleaning area (e.g. sq ft, small/medium/large)" },
       bedrooms: { type: Type.NUMBER, description: "Number of bedrooms" },
@@ -39,11 +40,14 @@ You have access to a tool called "update_booking_details".
 **Whenever the user provides or confirms any of the following information, you MUST call this tool immediately to update the database:**
 - Name
 - Phone Number
+- Email Address
 - Address
 - Cleaning Size (sq ft or general size)
 - Number of Bedrooms/Bathrooms
 - Cleaning Frequency (One-time, Weekly, Bi-weekly, etc.)
 - Schedule Date/Time
+
+**IMPORTANT: Always collect the customer's phone number and email address early in the conversation. These are required for booking confirmation.**
 
 Do not wait for the end of the conversation. Update the record incrementally as you gather info.
 
@@ -52,8 +56,9 @@ Your goal is to handle all cleaning-service calls efficiently while keeping the 
 1. **Understand the Caller's Intent**: Ask a simple, direct question (e.g., "Are you looking to book a cleaning?").
 2. **If Booking**: 
    - **Step 1:** Once they confirm they want a cleaning, immediately ask if they are looking for a **One-Time Cleaning** or a **Recurring Service** (like weekly or bi-weekly).
-   - **Step 2:** Collect the rest of the details: name, address, service type, home size (bedrooms/bathrooms), and preferred date.
-   - **Step 3:** Confirm all details clearly before finalizing.
+   - **Step 2:** Collect the customer's **phone number** and **email address** first for booking confirmation purposes.
+   - **Step 3:** Collect the rest of the details: name, address, service type, home size (bedrooms/bathrooms), and preferred date.
+   - **Step 4:** Confirm all details clearly before finalizing.
 3. **If Checking Appointment**: Status update ("Team assigned", "On the way").
 4. **If Quoting**: Explain pricing (size + service + add-ons). Provide range.
 5. **If Asking About Services**: Explain cleanly.

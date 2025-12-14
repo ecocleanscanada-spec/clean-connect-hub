@@ -92,6 +92,10 @@ function extractBookingDetails(text: string, onBookingUpdate: (details: BookingD
   const phoneMatch = text.match(/(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})/);
   if (phoneMatch) details.phoneNumber = phoneMatch[1];
   
+  // Extract email
+  const emailMatch = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+  if (emailMatch) details.email = emailMatch[1];
+  
   // Extract bedrooms
   const bedroomMatch = text.match(/(\d+)\s*(?:bed(?:room)?s?)/i);
   if (bedroomMatch) details.bedrooms = parseInt(bedroomMatch[1]);
