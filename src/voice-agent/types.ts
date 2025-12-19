@@ -22,6 +22,7 @@ export interface BookingDetails {
   bathrooms?: number;
   scheduleDate?: string;
   cleaningFrequency?: string;
+  notes?: string;
 }
 
 export interface AudioFrequencyData {
