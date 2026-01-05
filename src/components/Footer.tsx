@@ -76,15 +76,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>(555) 123-4567</span>
+                <a href="tel:204-990-7686" className="hover:text-foreground transition-colors">204-990-7686</a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>info@cleanpro.com</span>
+                <a href="mailto:contact@ecocleans.ca" className="hover:text-foreground transition-colors">contact@ecocleans.ca</a>
               </li>
               <li className="flex items-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>123 Main St, Suite 100<br />Your City, ST 12345</span>
+                <span>6-719 Sherbrook Street<br />Winnipeg, MB R3B 2X4</span>
               </li>
             </ul>
           </div>
