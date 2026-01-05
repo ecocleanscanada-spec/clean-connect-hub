@@ -27,6 +27,34 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
     return aiRef.current;
   };
 
+  const sendBookingNotification = async (details: BookingDetails) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-booking-notification', {
+        body: {
+          customerName: details.customerName || '',
+          phoneNumber: details.phoneNumber || '',
+          email: details.email || '',
+          address: details.address || '',
+          cleaningSize: details.cleaningSize || '',
+          bedrooms: details.bedrooms || 0,
+          bathrooms: details.bathrooms || 0,
+          cleaningFrequency: details.cleaningFrequency || '',
+          scheduleDate: details.scheduleDate || '',
+          notes: details.notes || '',
+          adminEmail: 'info@ecocleans.ca', // Admin email to receive notifications
+        },
+      });
+
+      if (error) {
+        console.error('Error sending booking notification:', error);
+      } else {
+        console.log('Booking notification sent successfully');
+      }
+    } catch (err) {
+      console.error('Error sending booking notification:', err);
+    }
+  };
+
   const saveBookingToDatabase = async (details: BookingDetails) => {
     try {
       const bookingData = {
@@ -64,6 +92,8 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
           console.error('Error creating booking:', error);
         } else if (data) {
           setCurrentBookingId(data.id);
+          // Send email notification for new bookings
+          await sendBookingNotification(details);
         }
       }
     } catch (err) {
