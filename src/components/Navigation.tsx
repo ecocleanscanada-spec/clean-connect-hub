@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
 import ecocleans from "@/assets/ecocleans-logo.png";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,30 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+    <>
+      {/* Contact Bar */}
+      <div className="bg-primary text-primary-foreground py-2">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 md:gap-8 text-sm">
+            <a 
+              href="tel:204-990-7686" 
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
+            >
+              <Phone className="h-4 w-4 animate-[pulse_2s_ease-in-out_infinite] group-hover:scale-110 transition-transform" />
+              <span>204-990-7686</span>
+            </a>
+            <a 
+              href="mailto:contact@ecocleans.ca" 
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
+            >
+              <Mail className="h-4 w-4 animate-[bounce_2s_ease-in-out_infinite] group-hover:scale-110 transition-transform" />
+              <span>contact@ecocleans.ca</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -145,6 +168,7 @@ export default function Navigation() {
           </div>
         )}
       </div>
-    </nav>
+      </nav>
+    </>
   );
 }
