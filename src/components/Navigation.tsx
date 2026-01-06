@@ -51,7 +51,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+      <nav className="sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex h-28 items-center justify-between">
           {/* Logo */}
