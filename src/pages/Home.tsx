@@ -103,10 +103,10 @@ export default function Home() {
               Professional Cleaning Services
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Your Space, Sparkling Clean
+              Winnipeg's Trusted Cleaning Experts
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/90">
-              Experience the difference with our professional cleaning services. From homes to offices, 
+              Experience the difference with Winnipeg's premier professional cleaning services. From homes to offices, 
               we deliver exceptional results every time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
