@@ -53,10 +53,10 @@ export default function Navigation() {
 
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-28 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={ecocleans} alt="Ecocleans Pristine Clean" style={{ width: '180px', height: '72px' }} className="object-contain" />
+            <img src={ecocleans} alt="Ecocleans Pristine Clean" style={{ width: '360px', height: '144px' }} className="object-contain" />
           </Link>
 
           {/* Desktop Navigation */}
