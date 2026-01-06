@@ -1,47 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
-class Resend {
-  private apiKey: string;
-  
-  constructor(apiKey: string | undefined) {
-    if (!apiKey) throw new Error("RESEND_API_KEY is required");
-    this.apiKey = apiKey;
-  }
-  
-  emails = {
-    send: async (options: {
-      from: string;
-      to: string[];
-      subject: string;
-      html: string;
-    }) => {
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(options),
-      });
-      
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Failed to send email: ${error}`);
-      }
-      
-      return response.json();
-    },
-  };
-}
-
-const resend = new Resend(RESEND_API_KEY);
+const INTERNAL_SECRET = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret",
 };
 
 interface BookingNotificationRequest {
@@ -56,6 +20,18 @@ interface BookingNotificationRequest {
   scheduleDate: string;
   notes: string;
   adminEmail: string;
+  internalSecret?: string;
+}
+
+function escapeHtml(str: string): string {
+  const htmlEscapes: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return str.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -66,6 +42,26 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const booking: BookingNotificationRequest = await req.json();
+    
+    // Verify internal secret to prevent external calls
+    const internalSecretHeader = req.headers.get("x-internal-secret");
+    const providedSecret = booking.internalSecret || internalSecretHeader;
+    
+    if (!providedSecret || providedSecret !== INTERNAL_SECRET) {
+      console.error("Unauthorized attempt to call send-booking-notification");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "Email service not configured" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
     
     console.log("Sending booking notification for:", booking.customerName);
 
@@ -83,19 +79,19 @@ const handler = async (req: Request): Promise<Response> => {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 10px 0; font-weight: bold; width: 40%;">Name:</td>
-              <td style="padding: 10px 0;">${booking.customerName || 'Not provided'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.customerName || 'Not provided')}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Phone:</td>
-              <td style="padding: 10px 0;">${booking.phoneNumber || 'Not provided'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.phoneNumber || 'Not provided')}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Email:</td>
-              <td style="padding: 10px 0;">${booking.email || 'Not provided'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.email || 'Not provided')}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Address:</td>
-              <td style="padding: 10px 0;">${booking.address || 'Not provided'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.address || 'Not provided')}</td>
             </tr>
           </table>
           
@@ -106,7 +102,7 @@ const handler = async (req: Request): Promise<Response> => {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 10px 0; font-weight: bold; width: 40%;">Home Size:</td>
-              <td style="padding: 10px 0;">${booking.cleaningSize || 'Not specified'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.cleaningSize || 'Not specified')}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Bedrooms:</td>
@@ -118,11 +114,11 @@ const handler = async (req: Request): Promise<Response> => {
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Frequency:</td>
-              <td style="padding: 10px 0;">${booking.cleaningFrequency || 'Not specified'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.cleaningFrequency || 'Not specified')}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold;">Preferred Date:</td>
-              <td style="padding: 10px 0;">${booking.scheduleDate || 'Not specified'}</td>
+              <td style="padding: 10px 0;">${escapeHtml(booking.scheduleDate || 'Not specified')}</td>
             </tr>
           </table>
           
@@ -131,7 +127,7 @@ const handler = async (req: Request): Promise<Response> => {
               Additional Notes
             </h2>
             <p style="background-color: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
-              ${booking.notes}
+              ${escapeHtml(booking.notes)}
             </p>
           ` : ''}
           
@@ -148,13 +144,26 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    const emailResponse = await resend.emails.send({
-      from: "EcoCleans <onboarding@resend.dev>",
-      to: [booking.adminEmail],
-      subject: `New Booking: ${booking.customerName || 'New Customer'} - ${booking.scheduleDate || 'Date TBD'}`,
-      html: emailHtml,
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "EcoCleans <onboarding@resend.dev>",
+        to: [booking.adminEmail],
+        subject: `New Booking: ${escapeHtml(booking.customerName || 'New Customer')} - ${escapeHtml(booking.scheduleDate || 'Date TBD')}`,
+        html: emailHtml,
+      }),
     });
 
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to send email: ${error}`);
+    }
+
+    const emailResponse = await response.json();
     console.log("Email sent successfully:", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {

@@ -1,13 +1,15 @@
 import { useState, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { BookingDetails, ChatMessage, Speaker } from '../types';
 import { SYSTEM_INSTRUCTION } from '../utils/constants';
 import { supabase } from '@/integrations/supabase/client';
 
-const API_KEY = 'AIzaSyCbaCuijjUSShfTjqiS04BrJXW7Q00abEI';
-
 interface UseChatGeminiProps {
   onBookingUpdate: (details: BookingDetails) => void;
+}
+
+interface ChatHistoryMessage {
+  role: "user" | "model";
+  parts: { text: string }[];
 }
 
 export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
@@ -16,85 +18,32 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
   const [error, setError] = useState<string | null>(null);
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const accumulatedDetails = useRef<BookingDetails>({});
-  
-  const aiRef = useRef<GoogleGenAI | null>(null);
 
-  const getAI = () => {
-    if (!aiRef.current) {
-      if (!API_KEY) throw new Error("API Key not found");
-      aiRef.current = new GoogleGenAI({ apiKey: API_KEY });
-    }
-    return aiRef.current;
-  };
-
-  const sendBookingNotification = async (details: BookingDetails) => {
+  const saveBookingToDatabase = async (details: BookingDetails) => {
     try {
-      const { error } = await supabase.functions.invoke('send-booking-notification', {
+      const { data, error } = await supabase.functions.invoke('create-booking', {
         body: {
-          customerName: details.customerName || '',
-          phoneNumber: details.phoneNumber || '',
-          email: details.email || '',
-          address: details.address || '',
-          cleaningSize: details.cleaningSize || '',
-          bedrooms: details.bedrooms || 0,
-          bathrooms: details.bathrooms || 0,
-          cleaningFrequency: details.cleaningFrequency || '',
-          scheduleDate: details.scheduleDate || '',
-          notes: details.notes || '',
-          adminEmail: 'info@ecocleans.ca', // Admin email to receive notifications
+          id: currentBookingId || undefined,
+          customerName: details.customerName || undefined,
+          phoneNumber: details.phoneNumber || undefined,
+          email: details.email || undefined,
+          address: details.address || undefined,
+          cleaningSize: details.cleaningSize || undefined,
+          bedrooms: details.bedrooms || undefined,
+          bathrooms: details.bathrooms || undefined,
+          cleaningFrequency: details.cleaningFrequency || undefined,
+          scheduleDate: details.scheduleDate || undefined,
+          notes: details.notes || undefined,
         },
       });
 
       if (error) {
-        console.error('Error sending booking notification:', error);
-      } else {
-        console.log('Booking notification sent successfully');
+        console.error('Error saving booking:', error);
+        return;
       }
-    } catch (err) {
-      console.error('Error sending booking notification:', err);
-    }
-  };
 
-  const saveBookingToDatabase = async (details: BookingDetails) => {
-    try {
-      const bookingData = {
-        customer_name: details.customerName || null,
-        phone_number: details.phoneNumber || null,
-        email: details.email || null,
-        address: details.address || null,
-        cleaning_size: details.cleaningSize || null,
-        bedrooms: details.bedrooms || null,
-        bathrooms: details.bathrooms || null,
-        cleaning_frequency: details.cleaningFrequency || null,
-        schedule_date: details.scheduleDate || null,
-        notes: details.notes || null,
-      };
-
-      if (currentBookingId) {
-        // Update existing booking
-        const { error } = await supabase
-          .from('bookings')
-          .update(bookingData)
-          .eq('id', currentBookingId);
-        
-        if (error) {
-          console.error('Error updating booking:', error);
-        }
-      } else {
-        // Create new booking
-        const { data, error } = await supabase
-          .from('bookings')
-          .insert(bookingData)
-          .select('id')
-          .single();
-        
-        if (error) {
-          console.error('Error creating booking:', error);
-        } else if (data) {
-          setCurrentBookingId(data.id);
-          // Send email notification for new bookings
-          await sendBookingNotification(details);
-        }
+      if (data?.id && !currentBookingId) {
+        setCurrentBookingId(data.id);
       }
     } catch (err) {
       console.error('Error saving booking:', err);
@@ -111,26 +60,26 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
     ]);
 
     try {
-      const ai = getAI();
-      
       // Build conversation history for context
-      const conversationHistory = messages.map(msg => ({
+      const conversationHistory: ChatHistoryMessage[] = messages.map(msg => ({
         role: msg.role === Speaker.USER ? 'user' : 'model',
         parts: [{ text: msg.text }]
       }));
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [
-          ...conversationHistory,
-          { role: 'user', parts: [{ text }] }
-        ],
-        config: {
+      // Call the secure edge function instead of direct API
+      const { data, error: invokeError } = await supabase.functions.invoke('gemini-chat', {
+        body: {
+          messages: conversationHistory,
+          userMessage: text,
           systemInstruction: SYSTEM_INSTRUCTION,
-        }
+        },
       });
 
-      const modelResponseText = response.text;
+      if (invokeError) {
+        throw new Error(invokeError.message || 'Failed to get response');
+      }
+
+      const modelResponseText = data?.response;
       
       if (modelResponseText) {
         setMessages(prev => [
@@ -145,7 +94,7 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
           accumulatedDetails.current = { ...accumulatedDetails.current, ...newDetails };
           onBookingUpdate(accumulatedDetails.current);
           
-          // Save to database
+          // Save to database via edge function
           await saveBookingToDatabase(accumulatedDetails.current);
         }
       }

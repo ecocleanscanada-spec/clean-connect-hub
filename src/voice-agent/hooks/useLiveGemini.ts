@@ -1,11 +1,10 @@
 import { useState, useRef, useCallback } from 'react';
-import { GoogleGenAI, Modality } from '@google/genai';
+import { Modality } from '@google/genai';
 import type { LiveServerMessage } from '@google/genai';
 import { createBlob, decode, decodeAudioData } from '../utils/audio-utils';
 import { BookingDetails } from '../types';
 import { SYSTEM_INSTRUCTION, BOOKING_TOOL } from '../utils/constants';
-
-const API_KEY = 'AIzaSyCbaCuijjUSShfTjqiS04BrJXW7Q00abEI';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UseLiveGeminiProps {
   onBookingUpdate: (details: BookingDetails) => void;
@@ -32,9 +31,22 @@ export const useLiveGemini = ({ onBookingUpdate }: UseLiveGeminiProps) => {
   const connect = async () => {
     setError(null);
     try {
-      if (!API_KEY) throw new Error("API Key not found");
+      // First, get the API key from the edge function
+      const { data: configData, error: configError } = await supabase.functions.invoke('gemini-live-config', {
+        body: {},
+      });
 
-      const ai = new GoogleGenAI({ apiKey: API_KEY });
+      if (configError || !configData?.apiKey) {
+        // Fall back to a message that the live voice feature requires server configuration
+        setError("Live voice feature is currently unavailable. Please use the chat interface.");
+        return;
+      }
+
+      const apiKey = configData.apiKey;
+      
+      // Dynamic import to avoid bundling the API key
+      const { GoogleGenAI } = await import('@google/genai');
+      const ai = new GoogleGenAI({ apiKey });
       
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       inputAudioContextRef.current = new AudioContextClass({ 
