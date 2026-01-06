@@ -39,14 +39,36 @@ export function useAuth() {
   }, []);
 
   const checkAdminRole = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    
-    setIsAdmin(!!data);
+    try {
+      // Get the current session for the authorization header
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        setIsAdmin(false);
+        return;
+      }
+
+      // Server-side verification using edge function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-admin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const { isAdmin: serverIsAdmin } = await response.json();
+        setIsAdmin(!!serverIsAdmin);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (error) {
+      console.error("Admin verification failed:", error);
+      setIsAdmin(false);
+    }
   };
 
   const signOut = async () => {
