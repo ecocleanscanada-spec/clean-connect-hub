@@ -2,3 +2,12 @@ project_id = "isjsvoowakexkohasxtw"
 
 [functions.send-booking-notification]
 verify_jwt = false
+
+[functions.gemini-chat]
+verify_jwt = false
+
+[functions.create-booking]
+verify_jwt = false
+
+[functions.gemini-live-config]
+verify_jwt = false
