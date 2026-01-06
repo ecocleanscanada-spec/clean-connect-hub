@@ -60,6 +60,12 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
     ]);
 
     try {
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Please sign in to use the chat feature.');
+      }
+
       // Build conversation history for context
       const conversationHistory: ChatHistoryMessage[] = messages.map(msg => ({
         role: msg.role === Speaker.USER ? 'user' : 'model',
@@ -76,7 +82,8 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
       });
 
       if (invokeError) {
-        throw new Error(invokeError.message || 'Failed to get response');
+        const errorMessage = invokeError.message || 'Failed to get response';
+        throw new Error(errorMessage.includes("Rate limit") ? errorMessage : 'Failed to get response');
       }
 
       const modelResponseText = data?.response;

@@ -31,14 +31,22 @@ export const useLiveGemini = ({ onBookingUpdate }: UseLiveGeminiProps) => {
   const connect = async () => {
     setError(null);
     try {
-      // First, get the API key from the edge function
+      // Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setError("Please sign in to use the live voice feature.");
+        return;
+      }
+
+      // First, get the API key from the edge function (requires authentication)
       const { data: configData, error: configError } = await supabase.functions.invoke('gemini-live-config', {
         body: {},
       });
 
       if (configError || !configData?.apiKey) {
         // Fall back to a message that the live voice feature requires server configuration
-        setError("Live voice feature is currently unavailable. Please use the chat interface.");
+        const errorMessage = configError?.message || "Live voice feature is currently unavailable.";
+        setError(errorMessage.includes("Rate limit") ? errorMessage : "Live voice feature is currently unavailable. Please use the chat interface.");
         return;
       }
 
