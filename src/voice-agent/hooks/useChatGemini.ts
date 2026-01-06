@@ -21,6 +21,13 @@ export const useChatGemini = ({ onBookingUpdate }: UseChatGeminiProps) => {
 
   const saveBookingToDatabase = async (details: BookingDetails) => {
     try {
+      // Check if user is authenticated before saving
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('User not authenticated, skipping booking save');
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-booking', {
         body: {
           id: currentBookingId || undefined,
