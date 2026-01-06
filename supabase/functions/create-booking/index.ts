@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 const corsHeaders = {
@@ -184,7 +185,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.error("Supabase configuration missing");
       return new Response(
         JSON.stringify({ error: "Server configuration error" }),
@@ -192,10 +193,39 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.error("Missing or invalid authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - authentication required to create bookings" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Create Supabase client with user's auth context
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error("JWT verification failed:", claimsError);
+      return new Response(
+        JSON.stringify({ error: "Invalid or expired token" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const userId = claimsData.claims.sub as string;
+    console.log("Authenticated booking request from user:", userId);
+
     const input: BookingInput = await req.json();
     const isUpdate = !!input.id;
 
-    console.log(`Processing ${isUpdate ? "update" : "create"} booking request`);
+    console.log(`Processing ${isUpdate ? "update" : "create"} booking request for user:`, userId);
 
     // Validate and sanitize all inputs
     const validatedData: Record<string, any> = {
@@ -222,11 +252,18 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Create Supabase client with service role for server-side operations
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
+    // Use service role for updates (admin operations) or user context for inserts
     let result;
     if (isUpdate && input.id) {
+      // For updates, we need service role to bypass RLS (only admins can update via RLS)
+      if (!SUPABASE_SERVICE_ROLE_KEY) {
+        return new Response(
+          JSON.stringify({ error: "Update operations require admin privileges" }),
+          { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      const adminSupabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       // Validate UUID format
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(input.id)) {
@@ -236,7 +273,7 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await adminSupabase
         .from("bookings")
         .update(validatedData)
         .eq("id", input.id)
@@ -252,6 +289,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
       result = data;
     } else {
+      // For inserts, use the authenticated user's context (RLS allows authenticated users)
       const { data, error } = await supabase
         .from("bookings")
         .insert(validatedData)
