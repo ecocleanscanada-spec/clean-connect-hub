@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +24,7 @@ const services = [
 ];
 
 export default function Book() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,8 +38,42 @@ export default function Book() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Bookings are protected to prevent spam; require a signed-in user.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({
+        title: "Please sign in",
+        description: "To submit a booking request, please sign in first.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    const { error } = await supabase.functions.invoke("create-booking", {
+      body: {
+        customerName: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        address: formData.address,
+        cleaningSize: formData.service,
+        scheduleDate: `${formData.date} ${formData.time}`.trim(),
+        notes: formData.notes,
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Booking failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitted(true);
     toast({
       title: "Booking request received!",
